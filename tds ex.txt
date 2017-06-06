@@ -1,0 +1,646 @@
+﻿drop table tab_funcionario;
+
+create table tab_funcionario 
+	(idn number primary key, 
+	 nome varchar2(100), 
+	 doc_identificacao varchar2(100), 
+	 dt_admissao date, 
+	 dt_demissao date,  
+	 vl_salario_atual number);
+
+insert into tab_funcionario values (1,'Rogerio da Silva','FB973264',to_date('01/04/1999','dd/mm/yyyy'), null, 15750);
+insert into tab_funcionario values (2,'Fátima Bernardes','8135681135',to_date('02/07/2001','dd/mm/yyyy'), null, 4000);
+insert into tab_funcionario values (3,'Harry Potter','1518786545',to_date('01/04/2002','dd/mm/yyyy'), null, 4512);
+insert into tab_funcionario values (4,'Reinaldo de Andrade','64684121554',to_date('07/05/2010','dd/mm/yyyy'), null, 8458);
+insert into tab_funcionario values (5,'Vanessa Garcia','AX8415117',to_date('05/10/1984','dd/mm/yyyy'), to_date('14/02/2017','dd/mm/yyyy'), 12458);
+insert into tab_funcionario values (6,'Leandro Souza','5417557151',to_date('06/09/2011','dd/mm/yyyy'), null, 4582);
+insert into tab_funcionario values (7,'Bruno Santos Silva','24157158654',to_date('08/08/1997','dd/mm/yyyy'), null, 7541);
+insert into tab_funcionario values (8,'Arthur Alves','545157516X',to_date('26/07/2004','dd/mm/yyyy'), null, 2253);
+insert into tab_funcionario values (9,'Thiago Rodrigues da Silva','65498132545',to_date('09/05/2013','dd/mm/yyyy'), null, 15651);
+insert into tab_funcionario values (10,'Luis Claudio Silva','65418158712',to_date('21/11/2000','dd/mm/yyyy'), null, 25341);
+
+
+create or replace View vw_func 
+as
+Select idn codigo_func, nome, doc_identificacao
+from tab_funcionario
+where DT_DEMISSAO is null;
+
+--"codigo_func" acima é o apelido da coluna idn
+select * from vw_func where codigo_func=1;
+
+-- aceder a view do prof, mas a tabela nao
+grant select on vw_func to public
+select * from pf0064.vw_func;
+
+select * from pf0064.tab_funcionario; --dara erro, aluno nao possui o privilegio
+
+
+
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+
+ -- Utilizando o script SCRIPT VIEWS.txt disponível no portal, resolva os exercícios abaixo :
+
+ -- Criar uma view chamada VW USUARIO_ATIVO, que retorne o código, nome e documento de todos os usuários ativos.
+ CREATE OR REPLACE VIEW VW_USUARIO_ATIVO as
+ (SELECT IDN, NOME, DOC_IDENTIFICACAO
+ FROM TAB_FUNCIONARIO
+ WHERE dt_demissao is null);
+ 
+
+ 
+ --Criar uma view chamada VW_TOTAL_SALARIO, que retorne o total gasto com salários.
+CREATE OR REPLACE VIEW VW_TOTAL_SALARIO as
+(SELECT SUM(VL_SALARIO_ATUAL) as TOTAL_GASTO_SALARIOS
+FROM TAB_FUNCIONARIO);
+
+
+
+ -- Criar uma view chamada VW_QTD_FUNC, que retorne a quantidade de funcionários ativos.
+ CREATE OR REPLACE VIEW VW_QTD_FUNC as
+ SELECT COUNT(IDN) as TOTAL_FUNCIONARIOS_ATIVOS --poderia ser count(1)
+ FROM TAB_FUNCIONARIO
+ WHERE DT_DEMISSAO IS NULL;
+ 
+ 
+ 
+ 
+ --Criar uma view chamada VW_NOME_FUNC, que retorne somente o primeiro nome dos funcionários ativos.
+CREATE OR REPLACE VIEW VW_NOME_FUNC as
+SELECT SUBSTR(NOME, 1, INSTR(NOME,' ') -1) as PRIMEIRO_NOME
+FROM TAB_FUNCIONARIO
+WHERE DT_DEMISSAO IS NULL;
+
+
+
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+
+
+set serveroutput on
+/*  
+  declare 
+  mensagem VARCHAR2(100) := 'Hello World';
+  
+  begin 
+    dbms_output.put_line(mensagem);
+  end;
+  
+  */
+  -- desenvolver um bloco PL/SQL anonimo que receba 2 valores e exiba a soma, multiplicacao e divisao 
+  DECLARE 
+  num1 INTEGER := 12;
+  num2 INTEGER := 4;
+  soma INTEGER := num1 + num2;
+  divisao INTEGER := num1 / num2;
+  mult INTEGER := num1 * num2;
+  
+  BEGIN
+  DBMS_OUTPUT.PUT_LINE('soma: ' || soma);
+  DBMS_OUTPUT.PUT_LINE('multiplicacao: ' || num1 * num2);
+  DBMS_OUTPUT.PUT_LINE('divisao: ' || num1 / num2);
+  END;
+  
+  
+  
+  
+  -- desenvolver um bloco PL/SQL anonimo que receba um nome completo em uma variavel e exiba somente o primeiro nome
+ 
+ DECLARE
+ nome VARCHAR2(100):='ALLANA MILAN';
+ 
+ BEGIN
+ DBMS_OUTPUT.PUT_LINE(SUBSTR(nome, 1, INSTR(nome,' ') -1));
+ END;
+ 
+  
+  
+  -- desenvolver um bloco PL/SQL anonimo que receba uma data no formato DD/MM/YYYY e exiba somente o mes por extenso
+DECLARE 
+data to_char(sysdate, 'dd/mm/yyyy');
+
+BEGIN 
+DBMS_OUTPUT.PUT_LINE(extract(month from sysdate));
+END;  
+  
+------------------------------------------------------------------------------------------------
+
+DO PROF
+
+set serveroutput on
+
+declare
+v_soma number;
+v_mult number;
+v_div number;
+v_n1 number;
+v_n2 number;
+
+begin
+v_n1 := 10;
+v_n2 :=3;
+
+v_soma := v_n1 + v_n2;
+v_mult := v_n1 * v_n2;
+v_div := v_n1 / v_n2;
+
+dbms_output.put_line('Soma '|| v_soma);
+dbms_output.put_line('Mult '|| v_mult);
+dbms_output.put_line('Div '|| v_div);
+end;
+
+------------------------------------
+
+declare
+v_nome_completo varchar2(100);
+v_primeiro_nome varchar2(100);
+begin
+v_nome_completo :='Nome do fuland';
+v_primeiro_nome := substr(v_nome_completo,1,instr(v_nome_completo,'')-1);
+
+dbms_output.put_line('primeiro nome: ' || v_primeiro_nome);
+end;
+
+
+------------------------------------------
+
+
+declare
+v_data date;
+v_mes varchar2(20);
+begin
+v_data := to_date('14/03/2017','dd/mm/yyyy');
+v_mes := to_char(v_data,'month');
+dbms_output.put_line(v_data || ' ' || v_mes);
+end;
+
+
+
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+--anonimo executa tudo
+set serveroutput on
+
+DECLARE
+v_idade number;
+begin
+v_idade := 99;
+if v_idade >= 18 and v_idade <=65 then
+  dbms_output.put_line('maior');
+  
+  elsif v_idade > 65 then
+  dbms_output.put_line('idoso');
+  
+else
+  dbms_output.put_line('menor');
+end if;
+end;
+-----------------------------------------
+
+-- nao inicializar variavel no declare, e sim no begin
+
+declare
+v_cnt number;
+
+begin
+v_cnt := 0;
+
+  loop  
+    v_cnt := v_cnt +1;
+  dbms_output.put_line(v_cnt);
+  exit when v_cnt = 100;
+  end loop;
+end;
+
+
+------------------
+
+
+-- FOR nao precisa declarar variavel, entao nao precisa usar o'declare' 
+
+begin
+  for x in 1..100 loop
+  dbms_output.put_line(x);
+  end loop;
+end;
+
+
+
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+
+
+1) Desenvolver um bloco PL/SQL que exiba o nome e a idade armazenados em variáveis.
+
+
+
+set serveroutput on;
+declare
+  v_nome    varchar2(100);
+  v_idade   number;
+begin
+  v_nome := 'Nome do fulano';
+  v_idade:= 30;
+  dbms_output.put_line('Nome: ' || v_nome || ' Idade:' || v_idade);
+end;
+
+
+2) Desenvolver um script PL/SQL que receba em variáveis o nome, idade e email. Para todas as entradas, validar os casos abaixo:
+- Caso a idade seja menor que 18 anos, retornar somente a mensagem "Idade não permitida.
+- O endereço de e-mail obrigatóriamente deve ter o caractere "@".
+- O nome deve ter no mínimo 2 nomes.
+Caso todas as condições acima estejam validadas, exibir todos os dados recebidos nas variáveis.
+
+declare
+  v_nome    varchar2(100) := 'Nome completo';
+  v_idade   number:=20;
+  v_email   varchar2(100):='nome@dominio.com.br';
+begin
+  if v_idade < 18 then
+    dbms_output.put_line ('Idade não permitida');
+  --elsif instr(v_email,'@')=0 then
+  elsif v_email not like '%@%' then
+    dbms_output.put_line ('Email inválido');
+  elsif instr(v_nome,' ')=0 or length(v_nome)<5 then
+    dbms_output.put_line ('Nome inválido');
+  else
+    dbms_output.put_line ('Nome :' || v_nome);
+    dbms_output.put_line ('Idade :' || v_idade);
+    dbms_output.put_line ('Email :' || v_email);
+  end if;
+end;
+
+
+3) Desenvolver um bloco PL/SQL que receba 5 valores e armazene a média dos 5 valores. Armazenar somente números inteiros.
+
+
+declare
+  v_n1 number := 10;
+  v_n2 number := 15;
+  v_n3 number := 13;
+  v_n4 number := 0;
+  v_n5 number := 40;
+  v_media number;
+begin
+  v_media := trunc((v_n1+v_n2+v_n3+v_n4+v_n5)/5);
+  dbms_output.put_line ('Com trunc ' || v_media);
+  dbms_output.put_line ('Sem trunc ' || (v_n1+v_n2+v_n3+v_n4+v_n5)/5);
+end;
+
+4) Desenvolver um Bloco PL/SQL que receba um número em uma variável e exiba o resto da divisão dos próximos 100 números. Imprimir se é Par ou ímpar.
+
+
+declare
+  v_ini   number:=53;
+begin
+  for x in v_ini..v_ini+100 loop
+    if mod(x,2) = 0 then
+      dbms_output.put_line (x || ' é par');
+    else
+      dbms_output.put_line (x || ' é ímpar');
+    end if;
+  v_ini:=v_ini+1;
+  end loop;
+end;
+
+
+5) Desenvolver um Bloco PL/SQL que receba um nome, caso o nome exceda 30 caracteres exiba somente o sobrenome.
+
+declare
+  v_nome_completo varchar2(100);
+begin
+  v_nome_completo:='aaaa bbbb cccc ddddd eeeee ffffffff ggggggggg';
+  if length(v_nome_completo)>30 then
+    dbms_output.put_line (substr(v_nome_completo,instr(v_nome_completo,' ',-1)+1));
+  end if;
+end;
+
+
+6) Desenvolver um Bloco PL/SQL que exiba a seguinte mensagem de texto:
+'Hoje' || <sysdate> || ', estamos no seguinte dia da semana:' || <dia da semana>
+
+
+alter session set nls_language='brazilian portuguese';
+begin
+  dbms_output.put_line('Hoje' || sysdate || ', estamos no seguinte dia da semana:' ||
+  to_char(sysdate,'day month dd d hh24:mi:ss'));
+end;
+
+
+
+7) Desenvolva um bloco anônimo que exiba durante 365 dias (1 ano) apenas as datas que caem no sábado e domingo, após a entrada de uma data. Após a solicitação da entrada do campo data, exiba sequencialmente a data e o dia da semana que representa essa data. Utilize o comando loop para realizar essa tarefa. Utilize o pacote DBMS_OUTPUT para exibir esses valores. Exiba os valores em ordem de data
+
+alter session set nls_language='english';
+declare
+  v_data  date;
+begin
+  v_data := to_date('28/03/2017','dd/mm/yyyy');
+  for x in 1..365 loop
+    --if trim(to_char(v_data,'day'))='sábado' or trim(to_char(v_data,'day'))='domingo'  then
+    if to_char(v_data,'d')=7 or to_char(v_data,'d')=1  then
+      dbms_output.put_line( v_data || ' é ' || to_char(v_data,'day'));
+    end if;
+    v_data:=v_data+1;
+  end loop;
+end;
+
+
+select length(to_char(sysdate,'day')) from dual;
+
+
+
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+
+--1) Desenvolver um bloco PL/SQL que exiba o nome e a idade armazenados em variáveis.
+
+set serveroutput on;
+DECLARE
+nome VARCHAR2(100);
+idade number;
+
+BEGIN
+nome := 'Allana Milan';
+idade := 25;
+dbms_output.put_line('o nome é ' || nome || 'e a idade eh '||idade);
+
+END;
+
+
+
+
+-- 2) Desenvolver um script PL/SQL que receba em variáveis o nome, idade e email. Para todas as entradas, 
+--validar os casos abaixo:
+-- - Caso a idade seja menor que 18 anos, retornar somente a mensagem "Idade não permitida.
+-- - O endereço de e-mail obrigatóriamente deve ter o caractere "@".
+-- - O nome deve ter no mínimo 2 nomes.
+-- Caso todas as condições acima estejam validadas, exibir todos os dados recebidos nas variáveis.
+
+DECLARE 
+nome varchar2(100);
+idade number;
+email varchar2(100);
+
+BEGIN
+nome := 'Allana Thamyres';
+idade := 25;
+email := 'allana.milan@fiap.com.br';
+
+      if
+        idade < 18 then 
+        dbms_output.put_line('menor de idade');
+         
+      elsif 
+        INSTR(email,'@') =0 then
+        dbms_output.put_line('email invalido, falta o @');
+      
+      elsif  
+        INSTR(nome,' ') = 0 then
+        dbms_output.put_line('favor completar com segundo nome, ou sobrenome');
+      
+      else
+        dbms_output.put_line('nome: ' || nome || '   idade: ' || idade || ' email: ' || email );
+      end if;
+
+END;
+
+
+
+
+-- 3) Desenvolver um bloco PL/SQL que receba 5 valores e armazene a média dos 5 valores. 
+--Armazenar somente números inteiros.
+DECLARE
+v_num1 number;
+v_num2 number;
+v_num3 number;
+v_num4 number;
+v_num5 number;
+v_media number;
+
+BEGIN
+v_num1 := 2;
+v_num2 := 6;
+v_num3 := 12;
+v_num4 := 20;
+v_num5 := 16;
+
+v_media := (v_num1 + v_num2 +v_num3 + v_num4 + v_num5 / 5);
+
+ dbms_output.put_line('média: ' || v_media);
+ 
+END;
+
+
+-- 4) Desenvolver um Bloco PL/SQL que receba um número em uma variável e exiba o 
+--resto da divisão por 2 dos próximos 100 números. Imprimir se é Par ou ímpar.
+-- MOD( , ) 
+
+DECLARE
+v_num NUMBER;
+v_cont number;
+
+BEGIN
+  v_num := 20;
+  v_cont := 0;
+
+    LOOP
+    v_cont := v_cont + 1;
+    v_num := v_num + 1;
+    
+        if MOD(v_num,2) = 0 then
+        SYS.DBMS_OUTPUT.PUT_LINE(v_num || '  - PAR');
+        else
+        SYS.DBMS_OUTPUT.PUT_LINE(v_num || '  -  IMPAR');
+        end if;
+     
+    exit when v_cont = 100;
+    end loop;  
+
+
+END;
+
+-- 5) Desenvolver um Bloco PL/SQL que receba um nome, caso o nome exceda 30 caracteres exiba 
+--somente o sobrenome.
+
+DECLARE
+v_nome varchar2(100);
+
+BEGIN
+v_nome:='Allana hahahahaha hahahahhahahaha hahaha Milan';
+	
+	if length(v_nome) > 30 then
+		v_nome:= SUBSTR(v_nome,INSTR(v_nome, ' ', 1, 1),length(v_nome));
+		
+		dbms_output.put_line('Sobrenome: ' || v_nome);
+	end if;	
+ 
+END;
+
+
+
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+CURSOR
+
+SELECT * FROM USER_TABLES;
+
+set serveroutput on;
+
+declare 
+  cursor c_tabelas is
+  select table_name, tablespace_name
+  from user_tables
+  where num_rows > 20; --tabelas q tem mais de 20 linhas
+
+v_tabelas c_tabelas%rowtype; --v_tabelas eh um variavel q vai receber td q vier de c_tabelas
+
+
+begin
+  open c_tabelas;
+  loop
+    fetch c_tabelas into v_tabelas;
+    exit when c_tabelas%notfound;
+
+dbms_output.put_line('nome da tabela: ' || v_tabelas.table_name || ' Tablespace: ' || 
+v_tabelas.tablespace_name);
+
+end loop;
+close c_tabelas;
+end;
+
+
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+CURSOR
+
+
+
+select * from user_tables;
+
+create table exemplo_cursor as 
+    select table_name, tablespace_name 
+      from user_tables
+     where 1=2;
+
+
+set serveroutput on;
+declare
+  cursor c_tabelas is
+    select table_name, tablespace_name 
+      from user_tables
+     where table_name like 'A%';
+  
+  v_tabelas     c_tabelas%rowtype;
+  v_nome_tabela   varchar2(100);
+  v_tablespace    varchar2(100);
+
+begin
+  open c_tabelas;
+  loop
+    --fetch c_tabelas into v_nome_tabela, v_tablespace;
+    fetch c_tabelas into v_tabelas;
+    exit when c_tabelas%notfound;
+    insert into exemplo_cursor (table_name, tablespace_name)
+    values (v_tabelas.table_name, v_tabelas.tablespace_name);
+    --dbms_output.put_line ('Nome tabela:' || v_tabelas.table_name || ' Tablespace: ' ||  v_tabelas.tablespace_name);
+  end loop;
+  close c_tabelas;
+commit;
+end;
+
+
+select * from exemplo_cursor
+
+
+
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+
+DECLARE
+  v_nome varchar2(100) :='&NomeCompleto';
+  
+BEGIN
+  DBMS_OUTPUT.PUT_LINE('Nome recebido: ' || v_nome);
+
+END;
+
+-- QD USO & abre uma cauixa para o usuario digitar, tipo JOPtionPane do JAVA
+--------------------------------------------------------------
+
+DECLARE
+  v_idade number;
+
+BEGIN
+  v_idade:= 'zzzz';
+
+EXCEPTION
+WHEN OTHERS THEN
+  RAISE_APPLICATION_ERROR(-20001, 'erro desconhecido =>' || sqlerrm);
+
+END;
+
+----------------------------------------------------------------
+
+--  RAISE_APPLICATION_ERROR = aborta,
+--sqlerrm o oracle identifica e mostra o erro 
+-- sqlcode devolve o codigo do erro 
+
+----------------------------------------------------------------
+
+DECLARE
+v_numero_par        number;
+v_erro_numero_par   exception;
+
+
+BEGIN
+  FOR x IN 1..10 LOOP
+    BEGIN  
+          IF MOD(x,2)=0 THEN
+          RAISE v_erro_numero_par;
+          END IF;
+     EXCEPTION
+          WHEN v_erro_numero_par THEN
+          DBMS_OUTPUT.PUT_LINE(x||'É PAR');
+          RAISE_APPLICATION_ERROR(-20999, 'ERRO DE NEGOCIO.');
+          END;
+   END LOOP;
+  
+EXCEPTION
+    WHEN OTHERS THEN
+    RAISE_APPLICATION_ERROR(-20001, 'ABORTOU O PROG PELO ERRO' || sqlcode);
+
+END;
+
+
+------------------------------------------------------------------------------------------------------------------------
+------------------------------------------------------------------------------------------------------------------------
+
+
+   
+       
+SET SERVEROUTPUT ON       
+
+
+
+DECLARE
+  CURSOR c_nac IS SELECT * FROM PF0064.LOC_ITEM_LOCACAO;
+ 
+  v_tabelas  c_nac%rowtype;
+
+BEGIN
+  OPEN c_nac;
+    LOOP
+      FETCH c_nac into v_tabelas;
+      EXIT WHEN c_nac%notfound;
+        INSERT INTO LOC_ITEM_LOCACAO_STG(DT_RETIRADA, NR_ITEM, DT_ENTREGA, QT_DIAS, VL_LOCACAO, NR_PLACA, VL_TOTAL, NR_PEDIDO, DT_CARGA)
+        VALUES(v_tabelas.DT_RETIRADA, v_tabelas.NR_ITEM, v_tabelas.DT_ENTREGA, v_tabelas.QT_DIAS, v_tabelas.VL_LOCACAO, v_tabelas.NR_PLACA, v_tabelas.VL_TOTAL, v_tabelas.NR_PEDIDO,  to_date(sysdate, 'DD/MM/YYYY'));
+       
+              
+    END LOOP;
+  CLOSE c_nac;
+  COMMIT;
+END;
+
+
+       
